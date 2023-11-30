@@ -64,6 +64,7 @@ def make_subset(document, attributes_number, patterns_number, selection_input, s
     new_matrix = []
     for i in range(1, patterns_number):
         if str(i) in selection_patterns:
+            print(str(i))
             new_matrix.append([])
             inputs = [document[i][j] for j in range(attributes_number) if str(j + 1) in selection_input]
             outputs = [document[i][j] for j in range(attributes_number) if str(j + 1) in selection_output]
@@ -77,7 +78,11 @@ def select_subset(document, attributes_number, patterns_number, delimiter):
     """
     selection_input = input(f"Atributos de entrada (Numeros del 1 al {attributes_number} separados por '{delimiter}'): ").split(delimiter)
     selection_output = input(f"Atributos de salida (Numeros del 1 al {attributes_number} separados por '{delimiter}'): ").split(delimiter)
-    selection_patterns = input(f"Patrones (Numeros del 1 al {patterns_number} separados por '{delimiter}'): ").split(delimiter)
+
+    selection_patterns_range = input(f"Patrones (Rango, por ejemplo, 1-1000): ")
+    start, end = map(int, selection_patterns_range.split('-'))
+    selection_patterns = [str(i) for i in range(start, end + 1)]
+
     return make_subset(document, attributes_number, patterns_number, selection_input, selection_output, selection_patterns)
 
 def save_subset(new_matrix):
