@@ -64,7 +64,6 @@ def make_subset(document, attributes_number, patterns_number, selection_input, s
     new_matrix = []
     for i in range(1, patterns_number):
         if str(i) in selection_patterns:
-            print(str(i))
             new_matrix.append([])
             inputs = [document[i][j] for j in range(attributes_number) if str(j + 1) in selection_input]
             outputs = [document[i][j] for j in range(attributes_number) if str(j + 1) in selection_output]

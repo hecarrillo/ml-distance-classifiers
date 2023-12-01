@@ -2,6 +2,31 @@ import input_preprocess
 from knn_classifier import KNNClassifier
 from min_distance_classifier import MinimumDistanceClassifier
 
+def split_data(data, test_percentage):
+    """
+    Splits the data into training and testing sets.
+    """
+    X_train = []
+    X_test = []
+    y_train = []
+    y_test = []
+
+    # shuffle data
+    import random
+    random.shuffle(data)
+
+    # split data
+    split_index = int(len(data) * test_percentage)
+    X_train = [data[i][0] for i in range(split_index)]
+    X_train = [[float(value) for value in row] for row in X_train]
+    X_test = [data[i][0] for i in range(split_index, len(data))]
+    X_test = [[float(value) for value in row] for row in X_test]
+    y_train = [data[i][1] for i in range(split_index)]
+    y_train = [row[0] for row in y_train]
+    y_test = [data[i][1] for i in range(split_index, len(data))]
+    y_test = [row[0] for row in y_test]
+    return [X_train, X_test, y_train, y_test]
+
 # File and delimiter
 FILE_NAME = 'maternal.csv'
 DELIMITATOR = ','
@@ -23,31 +48,36 @@ input_preprocess.print_attr_data(attributes, attributes_input, attributes_output
 # Select a subset of data for training and testing
 new_matrix = input_preprocess.select_subset(document, attributes_number, patterns_number, DELIMITATOR)
 
-# Convert the new_matrix to a suitable format for training and testing
-# This needs to be adapted based on how your data looks like
-X_train = [data[0] for data in new_matrix]  # Inputs
-X_train = [[float(value) for value in row] for row in X_train]
-y_train = [data[1] for data in new_matrix]  # Outputs
-y_train = [row[0] for row in y_train]
+# Ask user for type of distance metric
+distance_metric = input("Ingrese el tipo de distancia (euclidiana o manhattan): ")
 
+# train (80) and test data (20)
+[X_train, X_test, y_train, y_test] = split_data(new_matrix, 0.2)
 
-print("x train", X_train[1:15])
-print("y train", y_train[1:15])
 # Initialize and train KNN Classifier
-knn_classifier = KNNClassifier(k=3, distance_metric='euclidean')
+knn_classifier = KNNClassifier(k=3, distance_metric=distance_metric)
 knn_classifier.fit(X_train, y_train)
 
-# Example prediction with KNN (replace X_test with actual test data)
-# X_test = [[...], [...]]  # Test data
-# predictions_knn = knn_classifier.predict(X_test)
+# Predict class labels for test data
+predictions_knn = knn_classifier.predict(X_test)
+
+# print metrics
+print("______________________________________________________________")
+print("Metrics for KNN Classifier:")
+knn_classifier.print_confusion_matrix(y_test, predictions_knn)
+knn_classifier.print_evaluation_metrics(y_test, predictions_knn)
+
 
 # Initialize and train Minimum Distance Classifier
-min_dist_classifier = MinimumDistanceClassifier(distance_metric='euclidean')
+min_dist_classifier = MinimumDistanceClassifier(distance_metric=distance_metric)
 min_dist_classifier.fit(X_train, y_train)
 
-# Example prediction with Minimum Distance Classifier (replace X_test with actual test data)
-# predictions_min_dist = min_dist_classifier.predict(X_test)
+# Predict class labels for test data
+predictions_min_dist = min_dist_classifier.predict(X_test)
 
-# Print predictions (for both classifiers)
-# print("KNN Predictions:", predictions_knn)
-# print("Minimum Distance Predictions:", predictions_min_dist)
+# print metrics
+print("______________________________________________________________")
+print("Metrics for Minimum Distance Classifier:")
+min_dist_classifier.print_confusion_matrix(y_test, predictions_min_dist)    
+min_dist_classifier.print_evaluation_metrics(y_test, predictions_min_dist)
+

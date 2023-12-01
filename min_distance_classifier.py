@@ -1,4 +1,6 @@
 import numpy as np
+from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, classification_report, confusion_matrix
+import pandas as pd
 
 def euclidean_distance(a, b):
     """
@@ -42,3 +44,32 @@ class MinimumDistanceClassifier:
             # Choose the class with the minimum distance
             predictions.append(min(distances, key=distances.get))
         return predictions
+
+    def print_evaluation_metrics(self, y_true, y_pred):
+        """
+        Prints evaluation metrics including accuracy, precision, recall, and F1-score.
+        """
+        accuracy = accuracy_score(y_true, y_pred)
+        precision = precision_score(y_true, y_pred, average='weighted')
+        recall = recall_score(y_true, y_pred, average='weighted')
+        f1 = f1_score(y_true, y_pred, average='weighted')
+
+        print("Accuracy:", accuracy)
+        print("Precision:", precision)
+        print("Recall:", recall)
+        print("F1-Score:", f1)
+        print("\nClassification Report:\n", classification_report(y_true, y_pred))
+    
+    def get_confusion_matrix(self, y_true, y_pred):
+        """
+        Calculates the confusion matrix.
+        """
+        return confusion_matrix(y_true, y_pred, labels=np.unique(y_true))
+
+    def print_confusion_matrix(self, y_true, y_pred):
+        """
+        Prints the confusion matrix in a readable format.
+        """
+        cm = self.get_confusion_matrix(y_true, y_pred)
+        cm_df = pd.DataFrame(cm, index=np.unique(y_true), columns=np.unique(y_true))
+        print("Confusion Matrix:\n", cm_df)
